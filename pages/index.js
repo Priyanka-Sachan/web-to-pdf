@@ -8,7 +8,9 @@ export default function Home() {
         <meta name="description" content="Convert webpages to PDFs" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1>Welcome!</h1>
+      <div className="container mx-auto prose prose:slate">
+        <h1>Welcome!</h1>
+      </div>
     </div>
   )
 }
