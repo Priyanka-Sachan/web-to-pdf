@@ -1,3 +1,4 @@
 export default function WebContent(props) {
-  return <div>{props.content}</div>
+  const { title, htmlContent, textContent } = props.content
+  return <div>{textContent}</div>
 }

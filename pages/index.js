@@ -19,7 +19,7 @@ export default function Home() {
     })
     try {
       const data = await response.json()
-      setUrlContent(data.message)
+      setUrlContent(data)
     } catch (e) {
       console.log(e)
     }

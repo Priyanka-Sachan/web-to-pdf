@@ -1,18 +1,28 @@
+import Readability from './Readability'
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
+
 export default async function getURLContent(req, res) {
   if (req.method == 'GET') {
     const query = req.query
     try {
       const url = query.url
-      var urlContent=''
       await fetch(url)
         .then((response) => response.text())
         .then((data) => {
-          //...parse the document and populate
-          urlContent=data
+          const doc = new JSDOM(data)
+          const docClone = doc.window.document
+          const article = new Readability(docClone).parse()
+          const parsedArticle = {
+            title: article.title,
+            htmlContent: article.content,
+            textContent: article.textContent,
+          }
+          res.status(201).json(parsedArticle)
         })
-      res.status(201).json({ message: urlContent })
     } catch (e) {
       console.log(e)
+      res.status(400).json({error:e})
     }
   }
 }
