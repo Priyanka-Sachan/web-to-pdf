@@ -9,6 +9,7 @@ export default function Home() {
   pdfMake.vfs = pdfFonts.pdfMake.vfs
   const webContent = useRef(null)
   const urlInput = useRef('')
+  const pdfEmbed = useRef(null)
   const [urlContent, setUrlContent] = useState({})
 
   async function getURLContent(e) {
@@ -80,7 +81,11 @@ export default function Home() {
         },
       },
     }
-    pdfMake.createPdf(docDefinition).download()
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition)
+
+    pdfDocGenerator.getDataUrl((dataUrl) => {
+      pdfEmbed.current.src = dataUrl + '#zoom=FitH'
+    })
   }
 
   return (
@@ -90,7 +95,7 @@ export default function Home() {
         <meta name="description" content="Convert webpages to PDFs" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="container mx-auto prose prose:slate">
+      <div className="container mx-auto prose prose:slate max-w-full pl-16 pr-16">
         <h1>WEB to PDF</h1>
         <form>
           <label
@@ -117,8 +122,19 @@ export default function Home() {
             </button>
           </div>
         </form>
-        <div ref={webContent}>
-          <WebContent content={urlContent} />
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-16">
+          <div ref={webContent}>
+            <WebContent content={urlContent} />
+          </div>
+          <embed
+            ref={pdfEmbed}
+            src=""
+            type="application/pdf"
+            frameBorder="0"
+            scrolling="auto"
+            width="100%"
+            height="100%"
+          ></embed>
         </div>
         <button
           className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
