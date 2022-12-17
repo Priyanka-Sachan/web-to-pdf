@@ -37,11 +37,18 @@ export default async function getWebpageContent(req, res) {
           // For images
           const images = document.querySelectorAll('img')
           for (const i of images) {
-            let newSrc = new URL(i.getAttribute('src'), url).href
-            if (newSrc.includes('?'))
-              newSrc = newSrc.slice(0, newSrc.indexOf('?'))
-              i.src = newSrc
+            try {
+              const src = i.getAttribute('src')
+              if (src.substring(0, 5) != 'data:') {
+                let newSrc = new URL(src, url).href
+                if (newSrc.includes('?'))
+                  newSrc = newSrc.slice(0, newSrc.indexOf('?'))
+                i.src = newSrc
+              }
               i.removeAttribute('srcset')
+            } catch (e) {
+              i.remove()
+            }
           }
 
           // Parsing

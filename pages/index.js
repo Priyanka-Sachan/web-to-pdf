@@ -38,20 +38,22 @@ export default function Home() {
     // Converting images to base64 encoding
     const images = htmlContent.querySelectorAll('img')
     for (const i of images) {
-      const response = await fetch('/api/content/image?url=' + i.src, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      if (response.ok) {
-        const data = await response.json()
-        console.log(data)
-        i.src = data.base64
-        i.removeAttribute('srcset')
-      } else {
-        console.log(response)
-        i.remove()
+      if (i.src.substring(0, 5) != 'data:') {
+        const response = await fetch('/api/content/image?url=' + i.src, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          console.log(data)
+          i.src = data.base64
+          i.removeAttribute('srcset')
+        } else {
+          console.log(response)
+          i.remove()
+        }
       }
     }
 
