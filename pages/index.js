@@ -16,7 +16,7 @@ export default function Home() {
     const url = urlInput.current.value
     console.log(`URL: ${url}`)
     // Fetch URL Content
-    const response = await fetch('/api/url-content?url=' + url, {
+    const response = await fetch('/api/content/webpage?url=' + url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,6 +34,29 @@ export default function Home() {
   async function convertToPdf(e) {
     console.log(webContent.current)
     const htmlContent = webContent.current
+
+    // Converting images to base64 encoding
+    const images = htmlContent.querySelectorAll('img')
+    for (const i of images) {
+      const response = await fetch('/api/content/image?url=' + i.src, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        console.log(data)
+        i.src = data.base64
+        i.removeAttribute('srcset')
+      } else {
+        console.log(response)
+        i.remove()
+      }
+    }
+
+    console.log(htmlContent)
+    // Convert HTML to pdfmake format
     var ret = htmlToPdfmake(htmlContent.outerHTML, {
       defaultStyles: {
         // change the default styles
@@ -43,7 +66,9 @@ export default function Home() {
       },
       imagesByReference: true,
     })
+
     console.log(ret)
+    // Convert to PDF
     var docDefinition = {
       content: ret.content,
       images: ret.images,
@@ -54,20 +79,6 @@ export default function Home() {
       },
     }
     pdfMake.createPdf(docDefinition).download()
-
-    // Using js2pdf
-    // doc.html(htmlContent, {
-    //   callback: function (doc) {
-    //     doc.save()
-    //   },
-    //   margin: [20, 20, 20, 20],
-    //   autoPaging: 'text',
-    //   filename: 'hello',
-    //   x: 0,
-    //   y: 0,
-    //   width: 400, //target width in the PDF document
-    //   windowWidth: 700, //window width in CSS pixels
-    // })
   }
 
   return (

@@ -1,9 +1,9 @@
-import Readability from './Readability'
+import Readability from '../Readability'
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
 import fetch from 'node-fetch'
 
-export default async function getURLContent(req, res) {
+export default async function getWebpageContent(req, res) {
   if (req.method == 'GET') {
     const query = req.query
     try {
@@ -40,21 +40,8 @@ export default async function getURLContent(req, res) {
             let newSrc = new URL(i.getAttribute('src'), url).href
             if (newSrc.includes('?'))
               newSrc = newSrc.slice(0, newSrc.indexOf('?'))
-            const imageUrlData = await fetch(newSrc)
-            const contentType = imageUrlData.headers.get('content-type')
-            if (
-              contentType == 'image/png' ||
-              contentType == 'image/jpeg' ||
-              contentType == 'image/jpg'
-            ) {
-              const buffer = await imageUrlData.arrayBuffer()
-              const stringifiedBuffer = Buffer.from(buffer).toString('base64')
-              const imageBas64 = `data:${contentType};base64,${stringifiedBuffer}`
-              i.src = imageBas64
+              i.src = newSrc
               i.removeAttribute('srcset')
-            } else {
-              i.remove()
-            }
           }
 
           // Parsing
